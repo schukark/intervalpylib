@@ -69,9 +69,12 @@ class AreaCalculator:
             self.__plot_area_2RPR(ax, *pa_params)
         elif self.name == "3-RPR":
             self.__plot_area_3RPR(ax, *pa_params)
+
+    def plot_linear_cube(**kwargs):
+        raise NotImplementedError
     
     def uni_plotter(self, area_points, border_points, ini_box=None, title="", ax=0, size=0, outside_boxes=None, legend=False, 
-                logger=0, plot_area=plot_area, pa_params=None):
+                plot_area=plot_area, pa_params=None):
         """
         Function for plotting boxes of different types
         :param area_points: array of inside boxes of shape (n, 2*size)
@@ -198,14 +201,11 @@ class AreaCalculator:
         plt.tight_layout()
         if plot_area!=None:
             plot_area(self, ax, pa_params)
+        plt.show()
 
-        if logger != 0:
-            
-
-    #         cid = fig.canvas.mpl_connect('button_press_event', onclick)
-    #         print("Logger")
-            Click_Obj = Clicker(logger, fig)
-    #     plt.show()
+    def make_grid2d(left_bottom: tuple, right_top: tuple, N: int) -> list[tuple]:
+        return AreaCalculator.make_boxes_list([np.linspace(left_bottom[0], right_top[0], N + 1), 
+                                               np.linspace(left_bottom[1], right_top[1], N + 1)], 2, False)
             
 if __name__ == "__main__":
     drawer = AreaCalculator("2-RPR", [3, 15, 8])
@@ -218,4 +218,3 @@ if __name__ == "__main__":
 
     boxes = AreaCalculator.make_boxes_list(grid_u, 2, False)
     drawer.uni_plotter([boxes[1025]], [boxes[1225]], size = 2, ini_box = ini_box, title="Method")
-    plt.show()
