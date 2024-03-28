@@ -4,13 +4,13 @@ import sympy
 
 class SymbolicEquationSolver:
     def __init__(self, name, params):
-        if name not in ["2-RPR", "3-RPR"]:
-            raise NotImplementedError
-        
         if name == "2-RPR":
             self._f, self._u, self._v = self.__symbolic_2rpr_func(*params)
-        if name == "3-RPR":
+        elif name == "3-RPR":
             self._f, self._u, self._v = self.__symbolic_3rpr_func(*params)
+        elif name == "custom":
+            assert len(params) >= 3
+            self._f, self._u, self._v = params[0], params[1], params[2]
         
         self._f_lam = None
         self._df_lam = None
