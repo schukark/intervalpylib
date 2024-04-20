@@ -5,20 +5,44 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import matplotlib.lines as mlines
 from matplotlib.patches import Rectangle
+from typing import Dict, List
 
-class AreaCalculator:    
+class AreaCalculator:   
+    """
+    Class that allows to visualize the solution if the dimensionality is less than 3
+    Precalculated areas for 2-RPR and 3-RPR robots are also included in the class
+    """ 
     def __init__(self, name, pa_params=None):
+        """Constructor
+
+        Args:
+            name (string): The name of the robot configuration
+            pa_params (dict, optional): Matplotlib parameters to draw the predetermined configuration. Defaults to None.
+
+        Raises:
+            NotImplementedError: if the configuration is not supported
+        """
         if name is not None and name not in ["2-RPR", "3-RPR"]:
             raise NotImplementedError
         self.name = name
         self.pa_params = pa_params
     
-    def make_boxes_list(grid, dim, uniform=True):
-        """
-        Make list of boxes in dim dimension from vector grid
-        :param grid: vector on which grid is constructed
-        :param dim:  the dimensional of grid
-        :return: the list of boxes in dim
+    """
+            Make list of boxes in dim dimension from vector grid
+            :param grid: vector on which grid is constructed
+            :param dim:  the dimensional of grid
+            :return: the list of boxes in dim
+            """
+    def make_boxes_list(grid: List[float], dim: int, uniform=True) -> List[tuple]:
+        """Makes the grid boxes for the solver and the drawer
+
+        Args:
+            grid (np.array or list): the 1d-grid that will be used for each axis
+            dim (int): the number of dimensions of the grid
+            uniform (bool, optional): Defines the grid to be uniform on each axis. Defaults to True.
+
+        Returns:
+            list of tuples: list of all boxes in the grid
         """
         if uniform == True:
             grid_size = len(grid) - 1
@@ -42,7 +66,14 @@ class AreaCalculator:
             grid_n_size = list(it.product(*grid_variants))
         return grid_n_size
     
-    def __plot_area_3RPR(self, ax, x_c, y_c):
+    def __plot_area_3RPR(self, ax: plt.axes, x_c: List[float], y_c: List[float]):
+        """private function to plot the workspace area of the 3-RPR robot
+
+        Args:
+            ax (plt.ax): the axes where to plot the area
+            x_c (List): the x-coordinates of the 3 circles' centers
+            y_c (List): the y-coordinates of the 3 circles' centers
+        """
         for i in range(3):
             circle = plt.Circle((x_c[i], y_c[i]), radius=12, fc='y', fill=False)
             circle1 = plt.Circle((x_c[i], y_c[i]), radius=27, fc='y', fill=False)
@@ -50,7 +81,15 @@ class AreaCalculator:
             ax.add_patch(circle1)
         ax.grid()
 
-    def __plot_area_2RPR(self, ax, r1=3, r2=15, d=8):
+    def __plot_area_2RPR(self, ax: plt.axes, r1: float=3, r2: float =15, d: float=8):
+        """private function to plot the workspace are of the 2-RPR robot
+
+        Args:
+            ax (plt.ax): the axes where to plot the area
+            r1 (float, optional): minimal length of the bar. Defaults to 3.
+            r2 (float, optional): maximal length of the bar. Defaults to 15.
+            d (float, optional): the distance between the stationary points. Defaults to 8.
+        """
         circle = plt.Circle((-0.5*d, 0), radius=r1, fc='y', fill=False, color="blue")
         ax.add_patch(circle)
         circle = plt.Circle((0.5*d, 0), radius=r1, fc='y', fill=False, color="red")
@@ -63,18 +102,26 @@ class AreaCalculator:
         ax.set_ylim([-20, 20])
         ax.grid()
 
-    def plot_area(self, ax, pa_params):
+    def plot_area(self, ax: plt.axes, pa_params: Dict):
+        """plots the analytically found area if the configuration is predetermined
+
+        Args:
+            ax (plt.axes): matplotlib axes where to plot
+            pa_params (_type_): matplotlib parameters for the configurations
+        """
         if self.name == "2-RPR":
             self.__plot_area_2RPR(ax, *pa_params)
         elif self.name == "3-RPR":
             self.__plot_area_3RPR(ax, *pa_params)
 
     def plot_linear_cube(**kwargs):
-        raise NotImplementedError
-    
-    def uni_plotter(self, area_points, border_points, ini_box=None, title="", ax=0, size=0, outside_boxes=None, legend=False, 
-                plot_area=plot_area, pa_params=None):
+        """Plots the 3d projection of the solution
+
+        Raises:
+            NotImplementedError: 3d is not yet supported
         """
+        raise NotImplementedError
+    """
         Function for plotting boxes of different types
         :param area_points: array of inside boxes of shape (n, 2*size)
         :param border_points: array of inside boxes of shape (m, 2*size)
@@ -84,6 +131,23 @@ class AreaCalculator:
         :param size: the dimensional of the output space, int
         :param outside_boxes: array of outside boxes of shape (k, 2*size)
         :return:
+        """
+    
+    def uni_plotter(self, area_points, border_points, ini_box=None, title="", ax=0, size=0, outside_boxes=None, legend=False, 
+                plot_area=plot_area, pa_params=None):
+        """Plots the solution on the grid with the analytically found area (if the configuration is supported)
+
+        Args:
+            area_points (List): the list of all the inside boxes
+            border_points (List): the list of all the border boxes
+            ini_box (List[List[float]], optional): The initial bounding box. Defaults to None.
+            title (str, optional): The title of the visualized solution. Defaults to "".
+            ax (int | plt.axes, optional): The matplotlib axes to plot on. Defaults to 0.
+            size (int, optional): Number of dimensions. Defaults to 0.
+            outside_boxes (List, optional): the list of all the outside boxes. Defaults to None.
+            legend (bool, optional): whether to show the legend on graph. Defaults to False.
+            plot_area (function, optional): the analytically found area. Defaults to plot_area.
+            pa_params (dict, optional): Matplotlib plot parameters. Defaults to None.
         """
         if pa_params is None:
             pa_params = self.pa_params
@@ -203,6 +267,16 @@ class AreaCalculator:
         plt.show()
     
     def make_grid2d(left_bottom: tuple, right_top: tuple, N: int) -> list[tuple]:
+        """Helper function to make a 2d grid
+
+        Args:
+            left_bottom (tuple): the coorindates of the bottom left corner of the grid
+            right_top (tuple): the coordinates of the top right corner of the grid
+            N (int):the number of boxes in one axis
+
+        Returns:
+            list[tuple]: the 2dgrid
+        """
         return AreaCalculator.make_boxes_list([np.linspace(left_bottom[0], right_top[0], N + 1), 
                                                np.linspace(left_bottom[1], right_top[1], N + 1)], 2, False)
             
@@ -216,4 +290,6 @@ if __name__ == "__main__":
     ini_box = [u_x, u_y]
 
     boxes = AreaCalculator.make_boxes_list(grid_u, 2, False)
-    drawer.uni_plotter([boxes[1025]], [boxes[1225]], size = 2, ini_box = ini_box, title="Method")
+    # Assuming boxes[400] is included in the solution - green color
+    # and boxes[1025] is on the border of the solution - yellow color
+    drawer.uni_plotter([boxes[400]], [boxes[1025]], size = 2, ini_box = ini_box, title="Method")

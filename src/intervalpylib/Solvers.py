@@ -4,17 +4,58 @@ import numpy as np
 import intervalpy as ival
 
 class Solver:
+    """The abstract solver class for the system
+    
+    Provides the interface to the custom solvers
+    """
     def __init__(self, name):
+        """Constructor
+
+        Args:
+            name string): the name of the solver
+
+        Raises:
+            NotImplementedError: because it is an abstract class
+        """
         raise NotImplementedError
 
-    def solve(self, system: SymbolicEquationSolver, boundary, verbose=False):
+    def solve(self, system: SymbolicEquationSolver, grid, x_ini, verbose=False):
+        """Solves a system of equations
+
+        Args:
+            system (SymbolicEquationSolver): the system of equations
+            grid (list): the list of boxes that makes up the grid
+            x_ini (list): the initial bounding box of the system's solution
+            verbose (bool, optional): whether to pring the debug info. Defaults to False.
+
+        Raises:
+            NotImplementedError: because it is an abstract class
+        """
         raise NotImplementedError
     
 class KrawczykSolver(Solver):
+    """An implementation of the interval Krawczyk operator
+
+    Args:
+        Solver (Solver): solver abstract class
+    """
     def __init__(self, name):
+        """Constructor
+
+        Args:
+            name (string): solver name (not necessary, because the solver gets its name here)
+        """
         self._name = "Krawczyk"
     
-    def __lambda_calcul(self, L, coef=1):
+    def __lambda_calcul(self, L: np.ndarray) -> np.ndarray:
+        """private function to calculate the lambda matrix for the interval Krawczyk operator
+
+        Args:
+            L (np.ndarray): Lipshitz matrix of the system
+
+        Returns:
+            mp.ndarray: The lambda matrix for the interval Krawczyk operator
+        """
         mid_matrix = L
         n = L.shape[0]
 
@@ -34,6 +75,17 @@ class KrawczykSolver(Solver):
         return Lambda
     
     def solve(self, system: SymbolicEquationSolver, grid, x_ini, verbose=False):
+        """solves the system given
+
+        Args:
+            system (SymbolicEquationSolver): the system to be solved
+            grid (List[tuple]): the grid
+            x_ini (list): the initial bounding box of the solution
+            verbose (bool, optional): whether to pring the debug info. Defaults to False.
+
+        Returns:
+            tuple[list, list]: (inside boxes, outside boxes)
+        """
         inside_boxes = []
         border_boxes = []
 
@@ -51,6 +103,19 @@ class KrawczykSolver(Solver):
         return inside_boxes, border_boxes
 
     def __krawczyk(self, f_num, df_num, x, c, Lambda, verbose=False):
+        """interval Krawczyk operator implementation
+
+        Args:
+            f_num (function): numeric lambda function of the system
+            df_num (function): numeric lambda function of the system's derivatives
+            x (list[ival.Interval]): previous approximation of the solution
+            c (list[ival.Interval]): list of middle points of the box
+            Lambda (np.ndarray): Lambda matrix of the system
+            verbose (bool, optional): whether to print the debug info. Defaults to False.
+
+        Returns:
+            _type_: the next approximation of the solution
+        """
         Kr = c - np.squeeze(np.matmul(Lambda, f_num(c))) + np.dot((np.identity(len(c)) - np.matmul(Lambda, df_num(x))), (x - c))
 
         for i in range(len(Kr)):
@@ -62,6 +127,15 @@ class KrawczykSolver(Solver):
         return Kr
     
     def __intersec(self, a, b):
+        """Calculates the interval intersection
+
+        Args:
+            a (ival.Interval): interval #1 
+            b (ival.Interval): interval #2 
+
+        Returns:
+            ival.Interval | None: the intersection
+        """
         if a[1] < b[0] or b[1] < a[0]:
                 return None
         else:
@@ -69,10 +143,25 @@ class KrawczykSolver(Solver):
     
     def __iterative_method_root_exictence_default_ia(self, f, df, x_ini, method, lambda_calcul, 
                                                     eps = 10e-6, max_iters=100, verbose=True):
+        """private function that iterates over the box to find the solution
+
+        Args:
+            f (function): numeric function of the system
+            df (function): numeric function of the system's derivatives
+            x_ini (List): initial bounding box of the solution
+            method (function): solver method
+            lambda_calcul (function): lambda calculator function
+            eps (float, optional): tolerance. Defaults to 10e-6.
+            max_iters (int, optional): The maximum number of iterations. Defaults to 100.
+            verbose (bool, optional): whether to print the debug info. Defaults to True.
+
+        Returns:
+            Literal['I', 'O', 'B']: the result of the computation (Inside, Outside or Border)
+        """
         n = len(x_ini)
         num_iters = 0
         queue = [x_ini]
-        while len(queue)!=0:
+        while len(queue) != 0:
             x = queue.pop(0)
             tol = max([x_i.width() for x_i in x])
             if np.all(ival.Interval([0, 0]).isIn(f[i](x[i])) for i in range(n)):
@@ -93,7 +182,7 @@ class KrawczykSolver(Solver):
                     return "I"
                 elif np.any([type(x_i) == type(None) for x_i in x_intersec]) :
                     return "O"
-                elif tol > eps and num_iters<max_iters:
+                elif tol > eps and num_iters < max_iters:
                     queue.append(x_intersec)
             else:
                 return "O"
