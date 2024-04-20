@@ -16,6 +16,10 @@ python3 -m pip install intervalpylib
 First of all, import that package:
 ```bash
 import intervalpylib as ival_utils
+``` 
+or 
+```bash
+from intervalpylib import <necessary class>
 ```
 
 Inside the package, there are 3 main classes that provide necessary functionality:
@@ -24,11 +28,9 @@ Inside the package, there are 3 main classes that provide necessary functionalit
 2. AreaCalculator, contains the functions/methods that allow to visualize the solution, as well as contain the analytically calculated robot areas for some known configurations
 3. Solver, an abstract class that sets the interface which custom solvers need to respect
 
-As an example, `KrawczykSolver` is included in the package (it implments the interval Krawczyk operator)
+As an example, `KrawczykSolver` is included in the package (it implements the interval Krawczyk operator)
 
 Example usage is included in the `example.py`
 
 ## License
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-
-## Requirements
