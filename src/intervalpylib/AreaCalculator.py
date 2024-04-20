@@ -1,5 +1,4 @@
 import numpy as np
-import sympy as sym
 import intervalpy as ival
 import itertools as it
 import matplotlib.pyplot as plt
@@ -7,9 +6,9 @@ import matplotlib.patches as mpatches
 import matplotlib.lines as mlines
 from matplotlib.patches import Rectangle
 
-class AreaCalculator:
+class AreaCalculator:    
     def __init__(self, name, pa_params=None):
-        if name not in ["2-RPR", "3-RPR"]:
+        if name is not None and name not in ["2-RPR", "3-RPR"]:
             raise NotImplementedError
         self.name = name
         self.pa_params = pa_params
@@ -199,10 +198,10 @@ class AreaCalculator:
         if legend:
             ax.legend(bbox_to_anchor=(1.05, 1.0), loc='upper left', handles=handles)
         plt.tight_layout()
-        if plot_area!=None:
+        if plot_area != None:
             plot_area(self, ax, pa_params)
         plt.show()
-
+    
     def make_grid2d(left_bottom: tuple, right_top: tuple, N: int) -> list[tuple]:
         return AreaCalculator.make_boxes_list([np.linspace(left_bottom[0], right_top[0], N + 1), 
                                                np.linspace(left_bottom[1], right_top[1], N + 1)], 2, False)
