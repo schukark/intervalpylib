@@ -1,6 +1,6 @@
 [project]
 name = "intervalpylib"
-version = "0.0.1"
+version = "0.1.0"
 authors = [{ name = "Schukark", email = "schukark2004@gmail.com" }]
 description = "An interval solver for robots' workspace area"
 readme = "README.md"

@@ -1,5 +1,5 @@
-from AreaCalculator import AreaCalculator
-from SymbolicEquationSolver import SymbolicEquationSolver
+from .AreaCalculator import AreaCalculator
+from .SymbolicEquationSolver import SymbolicEquationSolver
 import numpy as np
 import intervalpy as ival
 
