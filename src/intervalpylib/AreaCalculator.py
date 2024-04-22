@@ -121,17 +121,6 @@ class AreaCalculator:
             NotImplementedError: 3d is not yet supported
         """
         raise NotImplementedError
-    """
-        Function for plotting boxes of different types
-        :param area_points: array of inside boxes of shape (n, 2*size)
-        :param border_points: array of inside boxes of shape (m, 2*size)
-        :param ini_box: the initial box, the array of shape (size, 2)
-        :param title: the title for the plot, string
-        :param ax: the axes object
-        :param size: the dimensional of the output space, int
-        :param outside_boxes: array of outside boxes of shape (k, 2*size)
-        :return:
-        """
     
     def uni_plotter(self, area_points, border_points, ini_box=None, title="", ax=0, size=0, outside_boxes=None, legend=False, 
                 plot_area=plot_area, pa_params=None):
