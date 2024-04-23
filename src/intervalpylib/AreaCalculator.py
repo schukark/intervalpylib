@@ -61,17 +61,19 @@ class AreaCalculator:
             grid_n_size = list(it.product(*grid_variants))
         return grid_n_size
     
-    def __plot_area_3RPR(self, ax: plt.axes, x_c: List[float], y_c: List[float]):
+    def __plot_area_3RPR(self, ax: plt.axes, x_c: List[float], y_c: List[float], r_0: float, r_1: float):
         """private function to plot the workspace area of the 3-RPR robot
 
         Args:
             ax (plt.ax): the axes where to plot the area
             x_c (List): the x-coordinates of the 3 circles' centers
             y_c (List): the y-coordinates of the 3 circles' centers
+            r_0 (float): the radius of the inner circle
+            r_1 (float): the radius of the outer circle
         """
         for i in range(3):
-            circle = plt.Circle((x_c[i], y_c[i]), radius=12, fc='y', fill=False)
-            circle1 = plt.Circle((x_c[i], y_c[i]), radius=27, fc='y', fill=False)
+            circle = plt.Circle((x_c[i], y_c[i]), radius=r_0, fc='y', fill=False)
+            circle1 = plt.Circle((x_c[i], y_c[i]), radius=r_1, fc='y', fill=False)
             ax.add_patch(circle)
             ax.add_patch(circle1)
         ax.grid()
