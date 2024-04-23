@@ -10,6 +10,7 @@ from typing import Dict, List
 class AreaCalculator:   
     """
     Class that allows to visualize the solution if the dimensionality is less than 3
+    
     Precalculated areas for 2-RPR and 3-RPR robots are also included in the class
     """ 
     def __init__(self, name, pa_params=None):
@@ -27,12 +28,6 @@ class AreaCalculator:
         self.name = name
         self.pa_params = pa_params
     
-    """
-            Make list of boxes in dim dimension from vector grid
-            :param grid: vector on which grid is constructed
-            :param dim:  the dimensional of grid
-            :return: the list of boxes in dim
-            """
     def make_boxes_list(grid: List[float], dim: int, uniform=True) -> List[tuple]:
         """Makes the grid boxes for the solver and the drawer
 
