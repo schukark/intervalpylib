@@ -2,7 +2,7 @@ from intervalpylib import AreaCalculator, SymbolicEquationSolver, KrawczykSolver
 import intervalpy as ival
 import numpy as np
 
-config = "3-RPR"
+config = "2-RPR"
 
 if config == "2-RPR":
     # Choose solver
@@ -37,13 +37,15 @@ elif config == "3-RPR":
         x_c[i] = x_a[i] - x_b[i] * np.cos(phi) + y_b[i] * np.sin(phi)
         y_c[i] = y_a[i] - x_b[i] * np.sin(phi) - y_b[i] * np.cos(phi)
     
+    length = [12, 27]
+    
     # Choose drawer
-    drawer = AreaCalculator("3-RPR", [x_c, y_c, 12, 27])
+    drawer = AreaCalculator("3-RPR", [x_c, y_c, length[0], length[1]])
     # Choose grid
     grid = AreaCalculator.make_grid2d(left_bottom=(-20, -20), right_top=(20, 20), N=128)
 
     # Choose lengths of rods in the 2-RPR configuration
-    x_num = np.array([ival.Interval([12, 27])] * 3)
+    x_num = np.array([ival.Interval(length)] * 3)
     # Solve the area
     inside, border = solver.solve(SymbolicEquationSolver("3-RPR", [x_c, y_c]), grid, x_num)
 
